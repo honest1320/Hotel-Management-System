@@ -14,7 +14,7 @@ namespace HotlDB
     public partial class Form1 : Form
     {
 
-         string connstring = "Server=localhost;Port=5432;User Id = postgres; Password=1320;Database=ProjectDB;";
+         string connstring = "Server=localhost;Port=5432;User Id = postgres; Password=1320;Database=Project;";
          NpgsqlConnection conn;
          string sql;
          NpgsqlCommand cmd;
@@ -32,17 +32,13 @@ namespace HotlDB
         {
             conn = new NpgsqlConnection(connstring);
 
-            dateTimePicker1.CustomFormat = "yyyy-MM-dd";
-            dateTimePicker2.CustomFormat = "yyyy-MM-dd";
-            dateTimePicker3.CustomFormat = "yyyy-MM-dd";
-
             Select();
         }
 
         private void Select()
         {
             conn.Open();
-            sql = @"SELECT * FROM hotel_database.bookings";
+            sql = @"SELECT * FROM database_hotel.bookings order by booking_id";
             DataTable dt = new DataTable();
             da = new NpgsqlDataAdapter(sql, conn);
             da.Fill(dt);
@@ -82,9 +78,10 @@ namespace HotlDB
                 using (var cmd = conn.CreateCommand())
                 {
                     conn.Open();
-                    cmd.CommandText = string.Format("delete from hotel_database.bookings where booking_id={0} ", RowID);
+                    cmd.CommandText = string.Format("delete from database_hotel.bookings where booking_id={0} ", RowID);
                     cmd.ExecuteNonQuery();
                     MessageBox.Show("Record Deleted Successfully");
+                    ClearData();
                     conn.Close();
                 }
             }
@@ -133,14 +130,14 @@ namespace HotlDB
         private void update_btn_Click(object sender, EventArgs e)
         {
    
-            cmd = new NpgsqlCommand("update hotel_database.bookings set booking_date=@bkDate, duration_of_stay=@days, check_in_date=@chkIn, check_out_date=@chkOut,  booking_payment_type=@payment, total_rooms_booked=@noRooms, hotel_hotel_id=@hotelID, guests_guest_id=@guestId, employees_emp_id=@empId, total_amount=@amount where booking_id=@bkId", conn);
+            cmd = new NpgsqlCommand("update database_hotel.bookings set booking_date=@bkDate, duration_of_stay=@days, check_in_date=@chkIn, check_out_date=@chkOut,  booking_payment_type=@payment, total_rooms_booked=@noRooms, hotel_hotel_id=@hotelID, guests_guest_id=@guestId, employees_emp_id=@empId, total_amount=@amount where booking_id=@bkId", conn);
             conn.Open();
             cmd.Parameters.AddWithValue("@bkId", ID);
 
-            cmd.Parameters.AddWithValue("@bkDate", dateTimePicker1.Value.Date);
+            cmd.Parameters.AddWithValue("@bkDate", dateTimePicker1.Value);
             cmd.Parameters.AddWithValue("@days", numericUpDown2.Value);
-            cmd.Parameters.AddWithValue("@chkIn", dateTimePicker2.Value.Date);
-            cmd.Parameters.AddWithValue("@chkOut", dateTimePicker3.Value.Date);
+            cmd.Parameters.AddWithValue("@chkIn", dateTimePicker2.Value);
+            cmd.Parameters.AddWithValue("@chkOut", dateTimePicker3.Value);
             cmd.Parameters.AddWithValue("@payment", textBox2.Text);
             cmd.Parameters.AddWithValue("@noRooms", numericUpDown3.Value);
             cmd.Parameters.AddWithValue("@hotelID", numericUpDown4.Value);
@@ -160,13 +157,13 @@ namespace HotlDB
         private void button3_Click(object sender, EventArgs e)
         {
 
-            cmd = new NpgsqlCommand("insert into hotel_database.bookings (booking_id,booking_date,duration_of_stay,check_in_date,check_out_date,booking_payment_type,total_rooms_booked,hotel_hotel_id,guests_guest_id,employees_emp_id,total_amount)  values(@bkId, @bkDate, @days, @chkIn, @chkOut, @payment, @noRooms, @hotelID, @guestId, @empId, @amount) ", conn);
+            cmd = new NpgsqlCommand("insert into database_hotel.bookings (booking_id,booking_date,duration_of_stay,check_in_date,check_out_date,booking_payment_type,total_rooms_booked,hotel_hotel_id,guests_guest_id,employees_emp_id,total_amount)  values(@bkId, @bkDate, @days, @chkIn, @chkOut, @payment, @noRooms, @hotelID, @guestId, @empId, @amount) ", conn);
             conn.Open();                    
             cmd.Parameters.AddWithValue("@bkId", numericUpDown1.Value);
-            cmd.Parameters.AddWithValue("@bkDate", dateTimePicker1.Value.Date);
+            cmd.Parameters.AddWithValue("@bkDate", dateTimePicker1.Value);
             cmd.Parameters.AddWithValue("@days", numericUpDown2.Value);
-            cmd.Parameters.AddWithValue("@chkIn", dateTimePicker2.Value.Date);
-            cmd.Parameters.AddWithValue("@chkOut", dateTimePicker3.Value.Date);
+            cmd.Parameters.AddWithValue("@chkIn", dateTimePicker2.Value);
+            cmd.Parameters.AddWithValue("@chkOut", dateTimePicker3.Value);
             cmd.Parameters.AddWithValue("@payment", textBox2.Text);
             cmd.Parameters.AddWithValue("@noRooms", numericUpDown3.Value);
             cmd.Parameters.AddWithValue("@hotelID", numericUpDown4.Value);
@@ -184,7 +181,7 @@ namespace HotlDB
 
         private void btn_search_Click(object sender, EventArgs e)
         {
-            da = new NpgsqlDataAdapter("select * from hotel_database.bookings where booking_date = '" + textBox1.Text + "'", conn);
+            da = new NpgsqlDataAdapter("select * from database_hotel.bookings where booking_date = '" + textBox1.Text + "'", conn);
             dt = new DataTable();
             da.Fill(dt);
             dataGridView1.DataSource = dt;
@@ -204,3 +201,4 @@ namespace HotlDB
         }
     }
 }
+
