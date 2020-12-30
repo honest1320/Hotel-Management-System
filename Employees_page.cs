@@ -13,7 +13,7 @@ namespace HotlDB
 {
     public partial class Form2 : Form
     {
-        string connstring = "Server=localhost;Port=5432;User Id = postgres; Password=1320;Database=ProjectDB;";
+        string connstring = "Server=localhost;Port=5432;User Id = postgres; Password=1320;Database=Project;";
         NpgsqlConnection conn;
         string sql;
         NpgsqlCommand cmd;
@@ -47,7 +47,7 @@ namespace HotlDB
 
         private void Select()
         {
-            sql = @"SELECT * FROM hotel_database.employees";
+            sql = @"SELECT * FROM database_hotel.employees order by emp_id";
             DataTable dt = new DataTable();
             NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, conn);
             da.Fill(dt);
@@ -80,7 +80,7 @@ namespace HotlDB
         private void btn_add_Click(object sender, EventArgs e)
         {
             
-            cmd = new NpgsqlCommand("insert into hotel_database.employees (emp_id, emp_first_name, emp_last_name, emp_designation, emp_contact_number, emp_email_address, department_department_id, addresses_address_id, hotel_hotel_id )   values(@empId, @name, @sname, @designat, @cont, @mail, @depId, @adId, @hotelId) ", conn);
+            cmd = new NpgsqlCommand("insert into database_hotel.employees (emp_id, emp_first_name, emp_last_name, emp_designation, emp_contact_number, emp_email_address, department_department_id, addresses_address_id, hotel_hotel_id )   values(@empId, @name, @sname, @designat, @cont, @mail, @depId, @adId, @hotelId) ", conn);
             conn.Open();                                    
             cmd.Parameters.AddWithValue("@empId", int.Parse(textBox2.Text));
             cmd.Parameters.AddWithValue("@name", textBox3.Text);
@@ -108,8 +108,9 @@ namespace HotlDB
                 using (var cmd = conn.CreateCommand())
                 {
                     conn.Open();
-                    cmd.CommandText = string.Format("delete from hotel_database.employees where emp_id={0}", RowID);
+                    cmd.CommandText = string.Format("delete from database_hotel.employees where emp_id={0}", RowID);
                     cmd.ExecuteNonQuery();
+                    ClearData();
                     conn.Close();
                 }
             }
@@ -128,7 +129,7 @@ namespace HotlDB
         private void btn_update_Click(object sender, EventArgs e)
         {
            
-            cmd = new NpgsqlCommand("update hotel_database.employees set emp_first_name=@name, emp_last_name=@sname, emp_designation=@designat, emp_contact_number=@cont,  emp_email_address=@mail, department_department_id=@depId, addresses_address_id=@adId, hotel_hotel_id=@hotelId where emp_id=@empId", conn);
+            cmd = new NpgsqlCommand("update database_hotel.employees set emp_first_name=@name, emp_last_name=@sname, emp_designation=@designat, emp_contact_number=@cont,  emp_email_address=@mail, department_department_id=@depId, addresses_address_id=@adId, hotel_hotel_id=@hotelId where emp_id=@empId", conn);
             conn.Open();
             cmd.Parameters.AddWithValue("@empId", ID);
 
@@ -160,7 +161,7 @@ namespace HotlDB
 
         private void btn_search_Click(object sender, EventArgs e)
         {
-            da = new NpgsqlDataAdapter("select * from hotel_database.bookings where check_in_date like '" + textBox8.Text + "%'", conn);
+            da = new NpgsqlDataAdapter("select * from database_hotel.bookings where check_in_date like '" + textBox8.Text + "%'", conn);
             dt = new DataTable();
             da.Fill(dt);
             dataGridView1.DataSource = dt;
@@ -169,7 +170,7 @@ namespace HotlDB
 
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
-            da = new NpgsqlDataAdapter("select * from hotel_database.employees where emp_first_name like '" + textBox8.Text + "%'", conn);
+            da = new NpgsqlDataAdapter("select * from database_hotel.employees where emp_first_name like '" + textBox8.Text + "%'", conn);
             dt = new DataTable();
             da.Fill(dt);
             dataGridView1.DataSource = dt;
